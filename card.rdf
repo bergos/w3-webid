@@ -18,5 +18,6 @@
       <foaf:member rdf:resource="http://bblfish.net/people/henry/card#me"/>
       <foaf:member rdf:resource="http://fcns.eu/people/andrei/card#me"/>
       <foaf:member rdf:resource="http://kingsley.idehen.net/dataspace/person/kidehen#this"/>
+      <foaf:member rdf:resource="http://melvincarvalho.com/#me"/>
     </foaf:Group>
 </rdf:RDF>
