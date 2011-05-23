@@ -20,5 +20,6 @@
       <foaf:member rdf:resource="http://kingsley.idehen.net/dataspace/person/kidehen#this"/>
       <foaf:member rdf:resource="http://melvincarvalho.com/#me"/>
       <foaf:member rdf:resource="http://www.bergnet.org/people/bergi/card#me"/>
+      <foaf:member rdf:resource="http://openspring.net/scor#me"/>
     </foaf:Group>
 </rdf:RDF>
