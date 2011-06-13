@@ -1,0 +1,361 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>WebID Architecture 1.0</title>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+    <!--
+      === NOTA BENE ===
+      For the three scripts below, if your spec resides on dev.w3 you can check them
+      out in the same tree and use relative links so that they'll work offline,
+     -->
+<style type='text/css'>
+code           { font-family: monospace; }
+
+span.hilite { color: red; /* font-weight: bold */ }
+
+li p           { margin-top: 0.3em;
+                 margin-bottom: 0.3em; }
+
+div.explanation { background-color: #ADD8E6;
+                   width: 80%;
+                   margin: 12px; padding: 8px; }
+div.explanation li { margin-top: 8px; }
+div.explanation dd { margin: 4px; }
+
+.adef {
+	font-family: monospace;
+	font-weight: bold;
+    color: #ff4500 !important;
+}
+
+.aref {
+	font-family: monospace;
+	font-weight: bold;
+    color: #ff4500 !important;
+}
+
+span.entity { color: red; }
+
+span.element { color: green; }
+</style>
+
+    <script src='http://dev.w3.org/2009/dap/ReSpec.js/js/respec.js' class='remove'></script>
+<!--    <script src='/ReSpec.js/js/respec.js' class='remove'></script> -->
+    <script class='remove'>
+      var preProc = {
+          apply:  function(c) {
+                    // process the document before anything else is done
+                    var refs = document.querySelectorAll('adef') ;
+                    for (var i = 0; i < refs.length; i++) {
+                        var item = refs[i];
+                        var p = item.parentNode ;
+                        var con = item.innerHTML ;
+                        var sp = document.createElement( 'dfn' ) ;
+                        var tit = item.getAttribute('title') ;
+                        if (!tit) {
+                            tit = con;
+                        }
+                        sp.className = 'adef' ;
+                        sp.title=tit ;
+                        sp.innerHTML = con ;
+                        p.replaceChild(sp, item) ;
+                    }
+                    refs = document.querySelectorAll('aref') ;
+                    for (var i = 0; i < refs.length; i++) {
+                        var item = refs[i];
+                        var p = item.parentNode ;
+                        var con = item.innerHTML ;
+                        var sp = document.createElement( 'a' ) ;
+                        sp.className = 'aref' ;
+                        sp.setAttribute('title', con);
+                        sp.innerHTML = '@'+con ;
+                        p.replaceChild(sp, item) ;
+                    }
+                    // local datatype references
+                    refs = document.querySelectorAll('ldtref') ;
+                    for (var i = 0; i < refs.length; i++) {
+                        var item = refs[i];
+                        if (!item) continue ;
+                        var p = item.parentNode ;
+                        var con = item.innerHTML ;
+                        var ref = item.getAttribute('title') ;
+                        if (!ref) {
+                            ref = item.textContent ;
+                        }
+                        if (ref) {
+                            ref = ref.replace(/\n/g, '_') ;
+                            ref = ref.replace(/\s+/g, '_') ;
+                        }
+                        var sp = document.createElement( 'a' ) ;
+                        sp.className = 'datatype';
+                        sp.title = ref ;
+                        sp.innerHTML = con ;
+                        p.replaceChild(sp, item) ;
+                    }
+                    // external datatype references
+                    refs = document.querySelectorAll('dtref') ;
+                    for (var i = 0; i < refs.length; i++) {
+                        var item = refs[i];
+                        if (!item) continue ;
+                        var p = item.parentNode ;
+                        var con = item.innerHTML ;
+                        var ref = item.getAttribute('title') ;
+                        if (!ref) {
+                            ref = item.textContent ;
+                        }
+                        if (ref) {
+                            ref = ref.replace(/\n/g, '_') ;
+                            ref = ref.replace(/\s+/g, '_') ;
+                        }
+                        var sp = document.createElement( 'a' ) ;
+                        sp.className = 'externalDFN';
+                        sp.title = ref ;
+                        sp.innerHTML = con ;
+                        p.replaceChild(sp, item) ;
+                    }
+                    // now do terms
+                    refs = document.querySelectorAll('tdef') ;
+                    for (var i = 0; i < refs.length; i++) {
+                        var item = refs[i];
+                        if (!item) continue ;
+                        var p = item.parentNode ;
+                        var con = item.innerHTML ;
+                        var ref = item.getAttribute('title') ;
+                        if (!ref) {
+                            ref = item.textContent ;
+                        }
+                        if (ref) {
+                            ref = ref.replace(/\n/g, '_') ;
+                            ref = ref.replace(/\s+/g, '_') ;
+                        }
+                        var sp = document.createElement( 'dfn' ) ;
+                        sp.title = ref ;
+                        sp.innerHTML = con ;
+                        p.replaceChild(sp, item) ;
+                    }
+                    // now term references
+                    refs = document.querySelectorAll('tref') ;
+                    for (var i = 0; i < refs.length; i++) {
+                        var item = refs[i];
+                        if (!item) continue ;
+                        var p = item.parentNode ;
+                        var con = item.innerHTML ;
+                        var ref = item.getAttribute('title') ;
+                        if (!ref) {
+                            ref = item.textContent ;
+                        }
+                        if (ref) {
+                            ref = ref.replace(/\n/g, '_') ;
+                            ref = ref.replace(/\s+/g, '_') ;
+                        }
+
+                        var sp = document.createElement( 'a' ) ;
+                        var id = item.textContent ;
+                        sp.className = 'tref' ;
+                        sp.title = ref ;
+                        sp.innerHTML = con ;
+                        p.replaceChild(sp, item) ;
+                    }
+                }
+        } ;
+
+
+      var respecConfig = {
+          // specification status (e.g. WD, LCWD, NOTE, etc.). If in doubt use ED.
+          // embed RDFa data in the output
+          doRDFa: true,
+          specStatus:           "ED",
+          diffTool:             "http://www3.aptest.com/standards/htmldiff/htmldiff.pl",
+
+          // the specifications short name, as in http://www.w3.org/TR/short-name/
+          shortName:            "webid",
+          subtitle: "Web Identification and Discovery",
+
+          // if you wish the publication date to be other than today, set this
+          // publishDate:  "2009-08-06",
+          copyrightStart:  "2010",
+
+          // if there is a previously published draft, uncomment this and set its YYYY-MM-DD date
+          // and its maturity status
+          previousPublishDate:  "2010-08-09",
+          previousMaturity:  "unofficial",
+          previousURI:       "http://www.w3.org/2005/Incubator/webid/spec/drafts/ED-webid-20100809",
+
+
+          // if there a publicly available Editors Draft, this is the link
+          edDraftURI:           "http://www.w3.org/2005/Incubator/webid/spec/drafts/ED-webid-20110210",
+
+          // if this is a LCWD, uncomment and set the end of its review period
+          // lcEnd: "2009-08-05",
+
+          // if you want to have extra CSS, append them to this list
+          // it is recommended that the respec.css stylesheet be kept
+          extraCSS:             ['http://dev.w3.org/2009/dap/ReSpec.js/css/respec.css'],
+
+          // editors, add as many as you like
+          // only "name" is required
+          editors:  [
+                   { name: "Manu Sporny", mailto:"msporny@digitalbazaar.com",
+                  company: "Digital Bazaar, Inc.", companyURL: "http://blog.digitalbazaar.com/" },
+              { name: "Toby Inkster", url: "http://tobyinkster.co.uk/" },
+              { name: "Henry Story", url: "http://bblfish.net/" },
+              { name: "Bruno Harbulot", url: "http://blog.distributedmatter.net/" },
+              { name: "Reto Bachmann-Gmür", url: "http://trialox.org/" }
+              ],
+
+          // authors, add as many as you like.
+          // This is optional, uncomment if you have authors as well as editors.
+          // only "name" is required. Same format as editors.
+
+          authors:  [
+              { name: "Manu Sporny", mailto:"msporny@digitalbazaar.com",
+                  company: "Digital Bazaar, Inc.", companyURL: "http://blog.digitalbazaar.com/" },
+              { name: "Toby Inkster", url: "http://tobyinkster.co.uk/" },
+              { name: "Henry Story", url: "http://bblfish.net/" },
+              { name: "Bruno Harbulot", url: "http://blog.distributedmatter.net/" },
+              { name: "Reto Bachmann-Gmür", url: "http://trialox.org/" }
+          ],
+
+//          errata: 'http://www.w3.org/MarkUp/2008/REC-rdfa-syntax-20081014-errata',
+
+          // name of the WG
+          wg:           "WebID XG",
+
+          // URI of the public WG page
+          wgURI:        "http://www.w3.org/2005/Incubator/webid/",
+
+          // name (with the @w3c.org) of the public mailing to which comments are due
+          wgPublicList: "public-xg-webid",
+
+          // alternate formats for this document
+          alternateFormats: [
+              { uri: 'http://www.w3.org/2005/Incubator/webid/spec/drafts/ED-webid-20110210/diff-20100809.html',
+                  label: "Diff from previous Editors Draft" }],
+
+          // URI of the patent status for this WG, for Rec-track documents
+          // !!!! IMPORTANT !!!!
+          // This is important for Rec-track documents, do not copy a patent URI from a random
+          // document unless you know what you're doing. If in doubt ask your friendly neighbourhood
+          // Team Contact.
+          wgPatentURI:  "http://www.w3.org/2004/01/pp-impl/44350/status",
+          maxTocLevel: 4,
+          preProcess: [ preProc ]
+      };
+
+
+      function updateExample(doc, content) {
+        // perform transformations to make it render and prettier
+        content = content.replace(/<!--/, '');
+        content = content.replace(/-->/, '');
+        content = doc._esc(content);
+        content = content.replace(/\*\*\*\*([^*]*)\*\*\*\*/g, '<span class="hilite">$1</span>') ;
+        return content ;
+      }
+
+      function updateDTD(doc, content) {
+        // perform transformations to
+        // make it render and prettier
+        content = '<pre class="dtd">' + doc._esc(content) + '</pre>';
+        content = content.replace(/!ENTITY % ([^ \t\r\n]*)/g, '!ENTITY <span class="entity">% $1</span>');
+        content = content.replace(/!ELEMENT ([^ \t$]*)/mg, '!ELEMENT <span class="element">$1</span>');
+        return content;
+      }
+
+      function updateSchema(doc, content) {
+        // perform transformations to
+        // make it render and prettier
+        content = '<pre class="dtd">' + doc._esc(content) + '</pre>';
+        content = content.replace(/&lt;xs:element\s+name=&quot;([^&]*)&quot;/g, '&lt;xs:element name="<span class="element" id="schema_element_$1">$1</span>"') ;
+        return content;
+      }
+
+      function updateTTL(doc, content) {
+        // perform transformations to
+        // make it render and prettier
+        content = '<pre class="sh_sourceCode">' + doc._esc(content) + '</pre>';
+        content = content.replace(/@prefix/g, '<span class="sh_keyword">@prefix</span>');
+        return content;
+      }
+    </script>
+  </head>
+  <body>
+    <section id='abstract'>
+
+<p>Webid gives you reasons to believe that your communication partner is the subject in your universe 
+of discourse they claim to be.
+</p>
+</section>
+
+
+<section id="identity">
+<h2>Identity</h2>
+
+<p>....</p>
+
+</section>
+
+<section id="end2end">
+<h2>End to end security</h2>
+
+<p>The "layer cake" of the web models security as something transcending all layers from the serialzed data to trust, unlike IPSec WebId isn't a security infrastructure at the lower levels of the stack, it doesn't hide away security from the user and even the application. This means that it allows the user to make informed decisions on whom to trust and whom to share secrets with.</p>
+
+<p>....</p>
+
+</section>
+
+
+<section id="linkeddata">
+<h2>Sharing believes with RDF and linked data</h2>
+
+<p>....</p>
+
+</section>
+
+<section>
+<h1>Preconditions</h1>
+
+<section>
+<h1>Terminology</h1>
+
+<dl>
+
+
+<dt><tdef>WebID URI</tdef></dt>
+<dd>A URI identifying a participant in a universe of discourse.</dd>
+
+<dt><tdef>WebID Profile</tdef></dt>
+<dd>A document associating a <tref>WebId URI</tref> to a <tref>public key</tref>.</dd>
+
+<dt><tdef>public key</tdef></dt>
+<dd>A widely distributed cryptographic key that can be used to verify
+digital signatures and encrypt data between a sender and a receiver. A public
+key is always included in an <tref>Identification Certificate</tref>.</dd>
+</dl>
+
+
+</section>
+
+<section class='informative' id="acknowledgements">
+<h1>Acknowledgments</h1>
+
+<p>The following people have been instrumental in providing thoughts, feedback,
+reviews, criticism and input in the creation of the WebId architecture:</p>
+
+<ul>
+<li>Tim Berners-Lee</li>
+<li>Sarven Capadisli</li>
+<li>Melvin Carvalho</li>
+<li>Michael Hausenblas</li>
+<li>Kingsley Idehen</li>
+<li>Ian Jacobi</li>
+<li>Nathan Rixham</li>
+<li>Seth Russell</li>
+<li>Jeff Sayre</li>
+<li>Peter Williams</li>
+</ul>
+
+</section>
+  </body>
+</html>
+

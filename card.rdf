@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<rdf:RDF
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+      xmlns:foaf="http://xmlns.com/foaf/0.1/">
+
+    <foaf:PersonalProfileDocument rdf:about="http://fcns.eu/group/webid/info.rdf">
+      <foaf:maker rdf:resource="http://fcns.eu/people/andrei/card#me"/>
+      <foaf:primaryTopic rdf:resource="#webIDXG"/>
+    </foaf:PersonalProfileDocument>
+
+    <!-- WebID -->
+    <foaf:Group rdf:ID="webIDXG">
+      <foaf:name>The WebID Incubator Group</foaf:name>
+      <foaf:homepage rdf:resource="http://www.w3.org/2005/Incubator/webid/"/>
+
+      <!-- Members list -->
+      <foaf:member rdf:resource="http://bblfish.net/people/henry/card#me"/>
+      <foaf:member rdf:resource="http://fcns.eu/people/andrei/card#me"/>
+      <foaf:member rdf:resource="http://kingsley.idehen.net/dataspace/person/kidehen#this"/>
+      <foaf:member rdf:resource="http://melvincarvalho.com/#me"/>
+      <foaf:member rdf:resource="http://www.bergnet.org/people/bergi/card#me"/>
+      <foaf:member rdf:resource="http://openspring.net/scor#me"/>
+    </foaf:Group>
+</rdf:RDF>
