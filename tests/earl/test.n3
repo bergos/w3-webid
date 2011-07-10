@@ -73,7 +73,7 @@ wit:pubkeyRSAModulus a earl:TestRequirement;
   dct:title "rsa:modulus is well formed" .
 
 wit:pubkeyRSAModulusFunctional a earl:TestCase;
-  dct:title "not more than one modulus";
+  dct:title "not more than one modulus per RSA public key - or else they have to be identical";
     dct:description "More than one modulus if they don't convert to the same number will lead to erratic behavior (one server will choose one the other server will chose the other)".
 
 wit:pubkeyRSAModulusLiteral a earl:TestCase;
