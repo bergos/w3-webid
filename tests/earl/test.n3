@@ -1,4 +1,4 @@
-@prefix cert: <http://www.w3.org/ns/auth/cert#> .
+﻿@prefix cert: <http://www.w3.org/ns/auth/cert#> .
 @prefix earl: <http://www.w3.org/ns/earl#> .
 @prefix zz: <http://clerezza.org/release/#> . #for the clerezza agent
 @prefix doap: <http://usefulinc.com/ns/doap#> .
@@ -30,85 +30,114 @@ zz:r05 a earl:Software;
 #
 ################################################
 
+#
 # pure certificate tests
-
+#
 wit:certificateProvided a earl:TestRequirement;
-  dct:title "The client provided a x509 certificate".
+	dct:title "Did the client provide a X509 certificate?".
 
 wit:certificateProvidedSAN a earl:TestRequirement;
-  dct:title "The client certificate contains a subject alternative name".
+	dct:title "Does the client certificate contain a subject alternative name?".
 
 wit:certificateDateOk a earl:TestRequirement;
-  dct:title "The current timestamp is between begin and end date of the certificate".
+	dct:title "Is the current timestamp between begin and end date of the certificate?".
 
 wit:certificatePubkeyRecognised a earl:TestRequirement;
-  dct:title "Public key in certificate recognised ";
-  dct:description """The public key in the certificate is recognised by the WebId code. If it is not then it is not going to be possible
-    to match it with the remote certificate. """ .  
+	dct:title "Could the public key be recognised?";
+	dct:description "The public key in the certificate is recognised by the WebId code. If it is not then it is not going to be possible to match it with the remote certificate.".
 
 wit:certificateCriticalExtensionsOk a earl:TestRequirement;
- dct:title "The certificate contains no unecessary critical extension";
- dct:description "Critical Extensions are not a direct problem for WebID, but can cause many servers to reject the certificate before the WebID code gets to see the certificate. These tests should not generate errors but only warnings" .
+	dct:title "Does the certificate contain no unnecessary critical extensions?";
+	dct:description "Critical Extensions are not a direct problem for WebID, but can cause many servers to reject the certificate before the WebID code gets to see the certificate. These tests should not generate errors but only warnings".
 
+wit:certificateOk a earl:TestRequirement;
+	dct:title "Does the certificate fulfill all requirements for a WebID certificate?";
+	dct:hasPart
+		wit:certificateProvided,
+		wit:certificateProvidedSAN,
+		wit:certificateDateOk,
+		wit:certificatePubkeyRecognised,
+		wit:certificateCriticalExtensionsOk.
 
+#
 # profile tests
-
+#
 wit:profileGet a earl:TestRequirement;
- dct:title "WebId Profile is accessible and downloadable".
+	dct:title "Is the WebID Profile accessible and downloadable?".
 
 wit:profileWellFormed a earl:TestRequirement;
- dct:title "WebId Profile is well formed";
- dct:description "The WebId Profile is parseable Content and transformable to RDF" .
+	dct:title "Is the profile well formed?";
+	dct:description "The WebId Profile is parseable Content and transformable to RDF".
 
 wit:profileWellFormedKey a earl:TestRequirement;
-  dct:title "WebIdProfile Contains well formed Keys";
-  dct:description "All the keys in the profile are well formed and not misleading";
-  skos:note "One does not need to test all keys in a profile, only those that are tied to the WebIDs found in the X509 cert. But to help users one could give them a deeper test of the profile." .
+	dct:title "Does the profile contain well formed keys?";
+	dct:description "All the keys in the profile are well formed and not misleading";
+	skos:note "One does not need to test all keys in a profile, only those that are tied to the WebIDs found in the X509 cert. But to help users one could give them a deeper test of the profile.".
 
 wit:profileWellFormedPubkey a earl:TestRequirement;
-  dct:title "Public Key is well formed" ;
-  dct:description "A particular Public key is well formed" .
+	dct:title "Is the public key well formed?";
+	dct:description "A particular Public key is well formed".
 
 wit:pubkeyRSAModulus a earl:TestRequirement;
-  dct:title "rsa:modulus is well formed" .
+	dct:title "Is the RSA modulus well formed?".
 
 wit:pubkeyRSAModulusFunctional a earl:TestCase;
-  dct:title "not more than one modulus per RSA public key - or else they have to be identical";
-    dct:description "More than one modulus if they don't convert to the same number will lead to erratic behavior (one server will choose one the other server will chose the other)".
+	dct:title "Does the public key contain only one modulus?";
+	dct:description "More than one modulus if they don't convert to the same number will lead to erratic behavior (one server will choose one the other server will chose the other)".
 
 wit:pubkeyRSAModulusLiteral a earl:TestCase;
-  dct:title "rsa:modulus is a literal number";
-  dct:description "In the current ontology we have moved to literals as the standard way of describing modulus and exponents".
+	dct:title "Is the RSA modulus a literal number?";
+	dct:description "In the current ontology we have moved to literals as the standard way of describing modulus and exponents".
 
 wit:pubkeyRSAExponent a earl:TestRequirement;
-  dct:title "rsa:public_exponent is well formed" .
+	dct:title "Is the RSA public exponent well formed?".
 
 wit:pubkeyRSAExponentFunctional a earl:TestCase;
-  dct:title "not more than one public exponent per RSA public key - or else they have to be identical" ;
-  dct:description "More than one exponent if they don't convert to the same number is very likely to create erratic behavior (one server will choose one the other server will chose the other)".
+	dct:title "Does the public key contain only one public exponent?";
+	dct:description "More than one exponent if they don't convert to the same number is very likely to create erratic behavior (one server will choose one the other server will chose the other)".
 
 wit:pubkeyRSAExponentLiteral a earl:TestCase;
-  dct:title "rsa:exponent key is a literal";
-  dct:description "In the current ontology we have moved to literals as the standard way of describing modulus and exponents".
+	dct:title "Is the RSA public exponent a literal number?";
+	dct:description "In the current ontology we have moved to literals as the standard way of describing modulus and exponents".
+
+wit:profileOk a earl:TestRequirement;
+	dct:title "Does the profile fulfill all requirements for WebID authentication?";
+	dct:hasPart
+		wit:profileGet,
+		wit:profileWellFormed,
+		wit:profileWellFormedKey,
+		wit:profileWellFormedPubkey,
+		wit:pubkeyRSAModulus,
+		wit:pubkeyRSAModulusFunctional,
+		wit:pubkeyRSAModulusLiteral.
 
 wit:pubkeyRSAModulusOldFunctional a earl:TestCase;
-  dct:title "if modulus is using non literal notation, there should be only one cert:hex relation to plain literal";
-  skos:note "this should be a deprecated test sooner rather than later. Warn people to move to newer notation.".
+	dct:title "If modulus is using non literal notation, is there only one cert:hex relation to plain literal?";
+	skos:note "this should be a deprecated test sooner rather than later. Warn people to move to newer notation.".
 
 wit:pubkeyRSAExponentOldFunctional a earl:TestCase;
-  dct:title "if exponent is using non literal notation, there should be only one cert:decimal relation to plain literal" .
+	dct:title "If public exponent is using non literal notation, is there only one cert:decimal relation to plain literal?".
 
+wit:pubkeyOldOk a earl:TestRequirement;
+	dct:title "Is the public key present in valid old non literal notation?";
+	dct:hasPart
+		wit:pubkeyRSAModulusOldFunctional,
+		wit:pubkeyRSAExponentOldFunctional.
 
+#
 # webid protocol tests: ie: tying pubkey and  Webid in certificate to remote WebID identifying description
+#
+wit:webidClaim a earl:TestRequirement;
+	dct:title "Could the particular WebID claim be verified?";
+	dct:description "Verification of a particular WebID claim";
+	dct:hasPart
+		wit:certificateOk,
+		wit:profileOk.
 
 wit:webidAuthentication a earl:TestRequirement;
-  dct:title "WebID Authentication Test";
-  dct:description "At least one webid claimed in the certificate has public key that verifies. " .
-
-wit:webidClaim a earl:TestRequirement;
-  dct:title "Particular WebId Claim Test";
-  dct:description "Verification of a particular WebID claim" .
-
+	dct:title "Could at least one WebID claim be verified?";
+	dct:description "At least one WebID claimed in the certificate has public key that verifies.";
+	dct:hasPart wit:webidClaim.
 
 ###############################################
 #
