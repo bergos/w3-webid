@@ -1,0 +1,143 @@
+﻿@prefix cert: <http://www.w3.org/ns/auth/cert#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix doap: <http://usefulinc.com/ns/doap#> .
+@prefix earl: <http://www.w3.org/ns/earl#> .
+@prefix http: <http://www.w3.org/2006/http#> .
+@prefix wit: <http://www.w3.org/2005/Incubator/webid/earl/RelyingParty#> . #Web Id Test
+@prefix zz: <http://clerezza.org/release/#> . #for the clerezza agent
+
+
+zz:r05 a earl:Software;
+   doap:repository <https://svn.apache.org/repos/asf/incubator/clerezza/trunk/parent/platform.security.foafssl/test>;
+   doap:programming-language "Scala";
+   doap:developer <http://bblfish.net/#hjs>;
+   doap:name "WebID Test suite in Clerezza" .
+
+
+<https://svn.apache.org/repos/asf/incubator/clerezza/trunk/parent/platform.security.foafssl/test> a doap:SVNRepository .
+
+
+
+
+
+
+
+
+
+
+
+## TODO: move me to the example
+## certificate information example
+##
+_:b1 a <http://www.w3.org/ns/auth/cert#Certificate>;
+	<http://www.w3.org/ns/auth/cert#base64der> "MIIB4jCCAUugAwIBAgIGATJ8slFiMA0GCSqGSIb3DQEBCwUAMA0xCzAJBgNVBAMTAk1lMB4XDTExMDkxODEzMjA1M1oXDTExMDkyMDEzMjA1M1owDTELMAkGA1UEAxMCTWUwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAKn+nJLQWb5gJh59yvAOfxJFmirHSlw8oRJNavCRl8xsDnciyibUIVQZQS9fja52OlgPkNQk3wHwrKQpcS/T7laTFg+89ssvBYHfePnU7IWE0Qacn6M1EM7krbNSOZ2bTrpZrPdvrBAgPNI1M7+Ox6T9mnf/ulW6fwzeLpxVbqJLAgMBAAGjTTBLMEkGA1UdEQEB/wQ/MD2GO2h0dHA6Ly9iZXJnbmV0LmR5bmRucy5vcmcvfmJlcmduZXQvd2ViaWRfdGVzdC9zaW1wbGUucmRmI21lMA0GCSqGSIb3DQEBCwUAA4GBAIUhRBp9wUd4jbDFbOof1s35vRIaXYm5YUSm63f0NadhMM6nhGfPcCv4CVvZv7BWWELLIzxp/hNhzTlhxTW7QjZLcSQhXie4GCq3WlxpgookzRc3oqGHtBz2CHlvhGNFUOtlC3D+tggW3XjPua4vQgjyX8DDs+pXgqFpefpaaGXK"^^<http://www.w3.org/2001/XMLSchema#string> ;
+	<http://www.w3.org/ns/auth/cert#principal_key> _:b3.
+
+_:b3 a <http://www.w3.org/ns/auth/rsa#RSAPublicKey>;
+	<http://www.w3.org/ns/auth/rsa#modulus> "a9fe9c92d059be60261e7dcaf00e7f12459a2ac74a5c3ca1124d6af09197cc6c0e7722ca26d4215419412f5f8dae763a580f90d424df01f0aca429712fd3ee5693160fbcf6cb2f0581df78f9d4ec8584d1069c9fa33510cee4adb352399d9b4eba59acf76fac10203cd23533bf8ec7a4fd9a77ffba55ba7f0cde2e9c556ea24b"^^<http://www.w3.org/ns/auth/cert#hex> ;
+	<http://www.w3.org/ns/auth/rsa#public_exponent> "65537"^^<http://www.w3.org/ns/auth/cert#int>.
+
+
+
+
+
+
+
+
+
+
+
+
+###############################################
+#
+# Example test result to make sure the above ontology is at least partially correct
+#
+################################################
+
+@prefix : <http://test.example/> .
+
+[] a earl:Assertion;
+ earl:test wit:webid_verification;
+ earl:result [ a earl:TestResult;
+    dct:description "rsa public key has two relations for modulus";
+    earl:outcome earl:failed ];
+ earl:subject :webProfile, :x509; 
+#{ 
+# for turtle parsers
+#   [] cert:identity <http://bblfish.net/person/henry/card#me>; 
+#      cert:modulus "as123123..."^^cert:hex, "dfff32093sd..."^^cert:hex; 
+#      cert:public_exponent "65537"^^cert:int .
+#};
+ earl:assertedBy zz:0_5-SNAPSHOT .
+
+
+[] a earl:Assertion;
+ earl:test wit:pubkeyMod_func;
+ earl:result [ a earl:TestResult;
+    dct:description "webid http://user.example/#me does not have a matching public key in profile";
+    earl:outcome earl:success ]; 
+ earl:subject :webProfile, :x509;
+ earl:assertedBy zz:0_5-SNAPSHOT .
+
+[] a earl:Assertion;
+earl:test wit:certificate_provided_san;
+earl:result [ a earl:TestResult;
+    dct:description "SAN missing";
+    earl:outcome earl:failed;
+    earl:pointer :x509 ];
+earl:subject :webProfile, :x509 .
+
+[] a earl:Assertion;
+earl:test wit:webid_verification;
+earl:result [ a earl:TestResult;
+    dct:description "ok";
+    earl:outcome earl:passed ];
+earl:subject :webProfile, :x509 .
+
+[] a earl:Assertion;
+# verification also on the URI level!!!
+earl:test wit:webid_verification_uri;
+earl:result [ a earl:TestResult;
+    dct:description "ok";
+    earl:outcome earl:passed;
+    earl:pointer <http://bblfish.net/person/henry/card#me> ]; 
+earl:subject :webProfile, :x509 .
+
+[] a earl:Assertion;
+earl:test wit:pubkey_rsa_modulus;   
+earl:result [ a earl:TestResult;
+    dct:description "modulus missing";
+    earl:outcome earl:failed;
+    earl:pointer <http://bblfish.net/person/henry/card#me2> ];
+earl:subject :webProfile, :x509 .
+
+:x509 a cert:X509Certificate;
+    cert:base64der """
+MIIDgzCCAuygAwIBAgIQZ84ABvhjj7hqFoWqSsvBFjANBgkqhkiG9w0BAQUFADBj
+MREwDwYDVQQKDAhGT0FGK1NTTDEmMCQGA1UECwwdVGhlIENvbW11bml0eSBvZiBT
+ZWxmIFNpZ25lcnMxJjAkBgNVBAMMHU5vdCBhIENlcnRpZmljYXRpb24gQXV0aG9y
+aXR5MB4XDTExMDMyODE0MDY1MFoXDTEyMDMxODE2MDY1MFowgYsxETAPBgNVBAoM
+CEZPQUYrU1NMMSYwJAYDVQQLDB1UaGUgQ29tbXVuaXR5IE9mIFNlbGYgU2lnbmVy
+czE3MDUGCgmSJomT8ixkAQEMJ2h0dHA6Ly9iYmxmaXNoLm5ldC9wZW9wbGUvaGVu
+cnkvY2FyZCNtZTEVMBMGA1UEAwwMYmJsZmlzaCBjYXJkMIIBIjANBgkqhkiG9w0B
+AQEFAAOCAQ8AMIIBCgKCAQEA5+kuueCGksuOuQciIrf7hjSRiahB8c3hd8hPjTH/
+6k+NBKN+H0MRHPiSVCVwvvhstF2zmE6Ms0NwzSDWHuSOqjEwu6+CKE8tvL0Y0OHk
+bkhVDhenLPQagKIWjXe0k4CDIcizyNj1L8zRwsN0TaxrYZZPlaTx2/VpMI3ApaVK
+yb/4+mJ4UZDBol9TMkTfyBbPq3iISMz6rt3vsNgksXar0DCftGag2V2E1L/t8Hvu
+De0UaqKajsIlVtu/iUMSYKu41dZJCVCYm/DrqcX0m1aUwHAYWKtSap9Z5p7PnJVo
+wqp2/3jnsf7h6WlUN9yQtm/FeEeMp+3Mx7DokAYYTElTaQIDAQABo4GKMIGHMAwG
+A1UdEwEB/wQCMAAwDgYDVR0PAQH/BAQDAgLsMBEGCWCGSAGG+EIBAQQEAwIFoDAd
+BgNVHQ4EFgQUzoQy71OnKyW8qE7boOHpLrjN2aQwNQYDVR0RAQH/BCswKYYnaHR0
+cDovL2JibGZpc2gubmV0L3Blb3BsZS9oZW5yeS9jYXJkI21lMA0GCSqGSIb3DQEB
+BQUAA4GBAH0kxSBDYGAMah4cloznjsnglGNMCTd2zPtxnWDFUjuD2YWhc8QXd/k7
+T1GlVZdLfT175/D7jYpXEVH7UyO8DTnttlAePmDqbspT+vcpV1orUrWlMTJ7hAzP
+Ev9aBOHrZPyKDeUJO0JgwAWxOU/ND347Ssg3lTbFt0jrZxDLHLxC""";
+ # should we also have a relation to the openssl type text format? Is that a standard?
+ cert:subjectAlternativeName <http://bblfish.net/people/henry/card#me>;
+ cert:IssuerDistinguishedName "O=FOAF+SSL, OU=The Community of Self Signers, CN=Not a Certification Authority".
+
+:webProfile a http:Response;
+         http:httpVersion "1.1";
+         http:headers [];
+         http:body "#the rdf file used. could be n3, or something. This could also point to the content?..." .
+
