@@ -1,23 +1,52 @@
-﻿@prefix cert: <http://www.w3.org/ns/auth/cert#> .
+# vocabulary to allow a RelyingParty to make a report on an attempt at a WebID authentication.
+
+@prefix cert: <http://www.w3.org/ns/auth/cert#> .
+@prefix rsa: <http://www.w3.org/ns/auth/rsa#> .
 @prefix earl: <http://www.w3.org/ns/earl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix dct: <http://purl.org/dc/terms/> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix wit: <http://www.w3.org/2005/Incubator/webid/earl/RelyingParty#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
 
 
-wit: a owl:Ontology;
+<#> a owl:Ontology .
+
+<> a foaf:Document;
+	dc:author <http://bblfish.net/people/henry/card#me>; 
+	dc:contributor <http://www.bergnet.org/people/bergi/card#me>;
+	rdfs:comment "Document describing a vocabulary to allow a RelyingParty to make a report on an attempt at a WebID authentication.";
 	rdfs:seeAlso <http://www.w3.org/2005/Incubator/webid/earl/RelyingPartyExample#>.
 
+#
+# Classes
+#
+
+wit:WebIDClaim a rdfs:Class;
+	rdfs:comment "A WebID Claim is a graph that consists of a claim that a public key identifies some WebID.".
+
+#
+# Properties
+#
+wit:claimedKey a rdfs:Property;
+	rdfs:comment "Public key of a WebID Claim.";
+	rdfs:domain wit:WebIDClaim;
+	rdfs:range rsa:RSAPublicKey.
+
+wit:claimedIdentity a rdfs:Property;
+	rdfs:comment "Identitiy URI of a WebID Claim.";
+	rdfs:domain wit:WebIDClaim.
 
 #
 # pure certificate tests
 #
 wit:certificateProvided a earl:TestCase;
 	dct:title "Did the client provide a X509 certificate?";
-	skos:note "If the client provided an certificate, the earl:subject property must point to it. The certificate is described with the class cert:Certificate using the property cert:base64der. The property cert:principal_key should point to the contained public key.".
+	skos:note "If the client provided an certificate, the earl:pointer property must point to it. The certificate is described with the class cert:Certificate using the property cert:base64der. The property cert:principal_key must point to the contained public key. The public key is described with a rsa:publicKey which contains the properties rsa:modulus and rsa:public_exponent. The log:semantics property must point to a blank node that contains a log:includes property for every WebIDClaim.".
 
 wit:certificateProvidedSAN a earl:TestCase;
 	dct:title "Does the client certificate contain a subject alternative name?";
@@ -52,7 +81,7 @@ wit:certificateOk a earl:TestRequirement;
 #
 wit:profileGet a earl:TestCase;
 	dct:title "Is the WebID Profile accessible and downloadable?";
-	skos:note "The earl:subject property must point to the profile. ".
+	skos:note "The earl:subject property must point to a resource with a owl:sameAs property that contains a reduced serialized form of the profile as literal. The reduced profile must contain the particular rsa:RSAPublicKey resource with the cert:ident, rsa:modulus, rsa:public_exponent properties.".
 
 wit:profileWellFormed a earl:TestCase;
 	dct:title "Is the profile well formed?";
